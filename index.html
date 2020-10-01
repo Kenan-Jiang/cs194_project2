@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 5px;
+}
+
+/* Clearfix (clear floats) */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>
+</head>
+<body>
+<p><strong>CS 194-26 PROJECT 2&nbsp;</strong><br /><strong>Kenan Jiang</strong></p>
+<li><strong>Part 1 Overview</strong><br />In the part, I build some filters and use them to detect edges and straght up images. </li>
+<ol>
+<li>Finite Difference Operator<br />
+Approach<br />First, I used two simple filter D_x and D_y<br /><strong> D_x=[1, -1] D_y=[[1],[-1]]</strong><br />   Here are the results after convolving our cameraman.jpg with these two filters.</li>
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./cameraman_dx.png" alt="dx" style="width:100%">
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./cameraman_dy.png" alt="dy" style="width:100%">
+        </figure>   
+    </div>       
+  </div>
+To compute the gradient magnitude image, I summed the squre of above 2 images (original convolved with D_x and D_y) and take the square root how the summation. You can see the result image on below left. It is sort of noisy because there are some dots on the right bottom corner.<br />
+To fix the nosiy output, I set up a threshold 70, which changes pixel value between (-70, 70) to be zero. This results in an better edge image, see below right. </li>
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./gradient_mag.png" alt="mag" style="width:100%">
+            <figcaption>gradient magnitude</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./edge.png" alt="edge" style="width:100%">
+            <figcaption>edge image</figcaption>
+        </figure>   
+    </div>       
+  </div>
+<li>Derivative of Gaussian (DoG) Filter<br />
+    First, I first blur our cameraman image with a Guassian filter, the I process the image with the same process stated in the former part. Here are the results. 
+    <div class="row">
+        <div class="column">
+            <figure>
+                <img src="./blur_dx.png" alt="blur_dx" style="width:100%">
+                <figcaption>blurred image convolved with Dx</figcaption>
+            </figure>          
+        </div>
+        <div class="column">
+            <figure>
+                <img src="./blur_dy.png" alt="blur_dy" style="width:100%">
+                <figcaption>blurred image convolved with Dy</figcaption>
+            </figure>          
+        </div>
+        <div class="column">
+            <figure>
+                <img src="./blur_mag.png" alt="blur_mag" style="width:100%">
+                <figcaption>blurred image gradient magnitude</figcaption>
+            </figure>          
+        </div>
+        <div class="column">
+            <figure>
+                <img src="./blur_edge.png" alt="blur_edge" style="width:100%">
+                <figcaption>edge image with blur</figcaption>
+            </figure>          
+        </div>
+      </div>
+    <strong>What are differences between here and results from previous part?<br /></strong>
+    I see the edge is much more clear after we apply a gaussian blur filter before doing convolutions.<br />
+    Next, I convolved the gaussian with D_x and D_y, so we have 2 derivative of gaussian filters (DoG filters) See below<br />
+    <div class="row">
+        <div class="column">
+            <figure>
+                <img src="./DoG_dx.png" alt="dog_dx" style="width:100%">
+            </figure>          
+        </div>
+        <div class="column">
+            <figure>
+                <img src="./DoG_dy.png" alt="dog_dy" style="width:100%">
+            </figure>   
+        </div> 
+        <div class="column">
+            <figure>
+                <img src="./dog_edge.png" alt="dog_edge" style="width:100%">
+            </figure>   
+        </div>        
+      </div>
+    We reach the same result becasue convolution operation can be combined.
+    </li>
+<li>Image Straightening<br />
+To sreaight up an image, I first rotate the gray image by a list of angles. Then for each rotated iamge, I use np.arctan2() to evaluate number of verticall/horizonal edges.
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./facade.jpg" alt="facade" style="width:100%">
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./facade_hist_0.png" alt="hist0" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./facade_hist_-4.png" alt="hist1" style="width:100%">
+            <figcaption>original</figcaption>
+        </figure>          
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./rotated_facade.png" alt="rofacade" style="width:100%">
+        </figure>          
+    </div>         
+  </div>
+  <div class="row">
+    <div class="column">
+        <figure>
+            <img src="./michael.jpg" alt="facade" style="width:100%">
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./michael_hist_0.png" alt="hist0" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./michael_hist_-4.png" alt="hist1" style="width:100%">
+            <figcaption>original</figcaption>
+        </figure>          
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./rotated_michael.png" alt="romicahel" style="width:100%">
+        </figure>          
+    </div>         
+  </div>
+Failure case
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./ski.jpg" alt="ski" style="width:100%">
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./ski_hist_0.png" alt="hist0" style="width:100%">
+        </figure>   
+    </div>     
+  </div>
+For this image, the code finds the best rotate is not rotating at all. which is false.
+</ol>
+<li><strong>Part 2 Overview</strong><br />Fun with Frequescies. I played around the frequencies of images to create different visual effects.</li>
+<ol>
+<li><strong>Image "Sharpening"</strong><br />
+I make a image looks more clear by substracting low frequency image from the original image. The "sharpening" is in quotes because we are not actually adding more infomation to the image.<br />
+I created a single filter to achieve above process. A unsharp mask filter using the formula in lecture: ((1 + α)*(unit impluse) − α * g)<br />
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./taj.jpg" alt="taj" style="width:100%">
+            <figcaption>original</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./sharp_taj.png" alt="sharp_taj" style="width:100%">
+            <figcaption>sharped with unsharp mask</figcaption>
+        </figure>   
+    </div>       
+  </div>
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./blur_ferry.jpg" alt="ferry" style="width:100%">
+            <figcaption>original</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./sharp_ferry.png" alt="sharp_ferry" style="width:100%">
+            <figcaption>sharped with unsharp mask</figcaption>
+        </figure>   
+    </div>       
+  </div>
+Evaluation: I pick a sharp original image, blur it, and then use my unsharp mask filter image to sharp it back.
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./sharp_eye.png" alt="eye" style="width:100%">
+            <figcaption>original sharp</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./blur_eye.png" alt="blur" style="width:100%">
+            <figcaption>blurred with gaussian</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./sharpen_blurred.png" alt="sharp_blur" style="width:100%">
+            <figcaption>unsharp filter result</figcaption>
+        </figure>   
+    </div>             
+  </div>
+I can see that the unsharp filter result looks more clear then the blurred image. However, it is not much clearer than our original image. I think this is because our sharpen techique does not include new info.<br />
+<li><strong>Hybrid Images</strong><br />
+In this part, I apply low-pass filter and high-pass filter on two images and add the results to create a hybrid image.<br />
+Here is the is the example image, cutoff1 = 12, cutoff2 = 10 <br />
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/DerekPicture.jpg" alt="derek" style="width:100%">
+            <figcaption>high_pass</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/nutmeg.jpg" alt="cat" style="width:100%">
+            <figcaption>low_pass</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/DerekPicturenutmeghybride.jpg" alt="hybrid" style="width:100%">
+            <figcaption>hybrid</figcaption>
+        </figure>   
+    </div>             
+  </div>
+Here is another two examples, mixing good and eaten apple, and Iron Man mask on and off. 
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/apple.jpg" alt="good" style="width:100%">
+            <figcaption>high_pass</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/bad_apple.jpg" alt="bad" style="width:100%">
+            <figcaption>low_pass</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/applebad_applehybride.jpg" alt="hybrid" style="width:100%">
+            <figcaption>hybrid</figcaption>
+        </figure>   
+    </div>             
+  </div>
+Here are the log magnitude of the Fourier transform of the apple group image
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/fourier_high.jpg" alt="good" style="width:100%">
+            <figcaption>high_pass image</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/fourier_low.jpg" alt="bad" style="width:100%">
+            <figcaption>low_pass image</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/fourier_filtered_high.jpg" alt="bad" style="width:100%">
+            <figcaption>filtered high_pass image</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/fourier_filtered_low.jpg" alt="bad" style="width:100%">
+            <figcaption>filtered loq_pass image</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/fourier_hybride.jpg" alt="hybrid" style="width:100%">
+            <figcaption>hybrid</figcaption>
+        </figure>   
+    </div>             
+  </div>
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/mask_on.jpg" alt="on" style="width:100%">
+            <figcaption>high_pass</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/mask_off.jpg" alt="off" style="width:100%">
+            <figcaption>low_pass</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/mask_onmask_offhybride.jpg" alt="hybrid" style="width:100%">
+            <figcaption>hybrid</figcaption>
+        </figure>   
+    </div>             
+  </div>
+Here is another example, but I consider it a <strong>failure</strong> case. 
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/clock.jpg" alt="clock1" style="width:100%">
+            <figcaption>high_pass</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/clock2.jpg" alt="clock2" style="width:100%">
+            <figcaption>low_pass</figcaption>
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/clockclock2hybride.jpg" alt="hybrid" style="width:100%">
+            <figcaption>hybrid</figcaption>
+        </figure>   
+    </div>             
+  </div>
+I think it fails because most of the numbers on the clock match to the blank area on another. So it looks like folding 2 images together.
+<li><strong>Gaussian and Laplacian Stacks</strong><br />
+Gaussian stacks is made by apply a Guassian filter level by level. Laplacian stack is the difference between the i-th and (i + 1)th layer of the Gaussian stack.<br />
+I applied my stacks on the lincoln image. filter size = 5, sigma = 10
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/lincoln_gaussion.jpg" alt="gaussion" style="width:100%">
+            <figcaption>gaussian stack</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/lincoln_lapalcidan.jpg" alt="lapal" style="width:100%">
+            <figcaption>lapalcidan stack</figcaption>
+        </figure>   
+    </div> 
+</div> 
+Here I will explain my process in part 2.2 on apple image with the help of these stacks.
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/apple_gaussion.jpg" alt="gaussion" style="width:100%">
+            <figcaption>gaussian stack</figcaption>
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/apple_lapalcidan.jpg" alt="lapal" style="width:100%">
+            <figcaption>lapalcidan stack</figcaption>
+        </figure>   
+    </div> 
+</div> 
+Here we can see as gaussian stack goes along, my low pass image (eaten apple) is getting more obvious. This is because we are continully applying low pass gaussian filter to the image, so we can see the low frequency image hidden in my hybride image.
+<li><strong>Multiresolution Blending</strong><br />
+In this section, I use the gaussian and lapalcidan stacks to create blending images. I calculate a lapalcidan stack for the 2 images for blending (LA, LB). Then I generte a mask use np.zero() and by handdrawing, and create a gaussian stack for the mask as well (GR)<br />
+Then I apply the formula in the RESULT_STACK = (GR*LA) + (1-GR)*LB
+Here is the oraple and another image
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/spline/apple.jpeg" alt="apple" style="width:100%">
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/spline/orange.jpeg" alt="orange" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/orangeapple_mask.jpg" alt="mask" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/orangeapple.jpg" alt="blend" style="width:100%">
+        </figure>   
+    </div>             
+  </div>
+  <div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/spline/city.jpg" alt="city" style="width:100%">
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/spline/destroy.jpg" alt="destroy" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/cityblend_mask.jpg" alt="mask" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/cityblend.jpg" alt="blend" style="width:100%">
+        </figure>   
+    </div>             
+  </div>
+Here is the one with ireegular mask, bird flying in sea
+<div class="row">
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/spline/bird.jpg" alt="bird" style="width:100%">
+        </figure>          
+    </div>
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/spline/sea.jpg" alt="sea" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/skysea_mask.jpg" alt="mask" style="width:100%">
+        </figure>   
+    </div> 
+    <div class="column">
+        <figure>
+            <img src="./hybrid_python/skysea.jpg" alt="blend" style="width:100%">
+        </figure>   
+    </div>             
+  </div>
+</body>

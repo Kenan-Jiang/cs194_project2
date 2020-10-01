@@ -1,0 +1,22 @@
+ For part 1.1, 1.2, 1.3, 2.1
+ Use Project 2.ipynb. Just run through each cell and you can get all images
+
+ For part 2.2
+ $cd hybrid_python
+ Select commands from:
+ python hybrid_image.py --img_high DerekPicture.jpg --img_low nutmeg.jpg --cutoff1 $number --cutoff2 $number
+ python hybrid_image.py --img_high clock.jpg --img_low clock2.jpg --cutoff1 $number --cutoff2 $number
+ python hybrid_image.py --img_high apple.jpg --img_low bad_apple.jpg --cutoff1 $number --cutoff2 $number
+ python hybrid_image.py --img_high mask_on.jpg --img_low mask_off.jpg --cutoff1 $number --cutoff2 $number (pick the top left and bottom corner to align)
+
+ For part 2.3
+ $cd hybrid_python
+ $python main.py
+
+ For part 2.4
+ $cd hybrid_python
+ Select commands from:
+ python blend.py --img1 ./spline/apple.jpeg --img2 ./spline/orange.jpeg
+ python blend.py --img1 ./spline/bird.jpg --img2 ./spline/sea.jpg
+ python blend.py --img1 ./spline/city.jpg --img2 ./spline/destroy.jpg
+ You will find outputs in hybrid_python folder
